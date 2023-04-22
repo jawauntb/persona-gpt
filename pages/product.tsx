@@ -1,27 +1,35 @@
 import { useRouter } from 'next/router';
 import { getResponsesFromPersonas } from './api/gptResponder';
 import { useState } from 'react';
+import { useClientSide } from '../utils/useClientSide';
 
 export default function Product() {
-//   const productIdea = 'An app to simulate user research';
-//   const userPersona1 = 'PM in big tech corp';
-//   const userPersona2 = 'Producer of events for a small niche';
-//   const userPersona3 = 'CEO at startup';
   const router = useRouter();
-  const { productIdea, userPersona1, userPersona2, userPersona3 } = router.query;
+  const isClient = useClientSide();
+
+  const { productIdea, userPersona1, userPersona2, userPersona3 } = router.query ?? {};
   const [inputText, setInputText] = useState('');
   const [responses, setResponses] = useState([""]);
+  const productIdeaString = productIdea as string;
+  const userPersona1String = userPersona1 as string;
+  const userPersona2String = userPersona2 as string;
+  const userPersona3String = userPersona3 as string;
+  const handleInputChange = (e: any) => setInputText(e.target.value);
 
-  const handleInputChange = (e:any) => setInputText(e.target.value);
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
 
-  const handleSubmit = (e:any) => {
-      e.preventDefault();
-      setResponses(["yes, I'd love that", "no i hate it", "fuck this"]);
-
-    // Call the Multi-GPT system to generate responses for each persona based on their attributes, inputText, and product details
-    // const generatedResponses = await getResponsesFromPersonas(apiEndpoint, apiKey, inputText, productIdea, [userPersona1, userPersona2, userPersona3]);
-    // setResponses(generatedResponses);
+    const generatedResponses = await getResponsesFromPersonas(
+      inputText,
+      productIdeaString,
+      [userPersona1String, userPersona2String, userPersona3String]
+    );
+    setResponses(generatedResponses);
   };
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto my-8">
