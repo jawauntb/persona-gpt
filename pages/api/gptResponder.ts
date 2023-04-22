@@ -2,7 +2,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
 
 export async function getResponsesFromPersonas(inputText: string, productIdea: string, personas: string[]) {
-  const key = "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"
+  const key = process.env.OPENAI_API_KEY;
   const chat = new ChatOpenAI({ openAIApiKey: key, temperature: 0.8 });
 
   const responses = await Promise.all(
