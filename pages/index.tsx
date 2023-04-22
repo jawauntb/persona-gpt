@@ -3,27 +3,28 @@ import { useState } from 'react';
 
 export default function Home() {
   const [productIdea, setProductIdea] = useState('');
-  const [userPersona1, setUserPersona1] = useState('');
-  const [userPersona2, setUserPersona2] = useState('');
-  const [userPersona3, setUserPersona3] = useState('');
+  const [userPersonas, setUserPersonas] = useState(['', '', '']);
 
- 
-    const router = useRouter();
+  const router = useRouter();
 
-    const handleSubmit = (e:any) => {
-      e.preventDefault();
-      // Process the inputs here or send them to your backend
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    router.push({
+      pathname: '/product',
+      query: {
+        productIdea,
+        userPersona1: userPersonas[0],
+        userPersona2: userPersonas[1],
+        userPersona3: userPersonas[2],
+      },
+    });
+  };
 
-      router.push({
-        pathname: '/product',
-        query: {
-          productIdea,
-          userPersona1,
-          userPersona2,
-          userPersona3,
-        },
-      });
-    };
+  const handleUserPersonaChange = (index: number, value: string) => {
+    const newUserPersonas = [...userPersonas];
+    newUserPersonas[index] = value;
+    setUserPersonas(newUserPersonas);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
@@ -45,18 +46,18 @@ export default function Home() {
                 />
               </div>
 
-              {[1, 2, 3].map((i) => (
+            {[0, 1, 2].map((i) => (
                 <div key={i} className="mb-4">
-                  <label htmlFor={`userPersona${i}`} className="block mb-2 text-sm font-medium text-gray-600">
-                    User Persona {i}
+                  <label htmlFor={`userPersona${i + 1}`} className="block mb-2 text-sm font-medium text-gray-600">
+                    User Persona {i + 1}
                   </label>
                   <input
                     type="text"
-                    id={`userPersona${i}`}
-                    value={eval(`userPersona${i}`)}
-                    onChange={(e) => eval(`setUserPersona${i}`)(e.target.value)}
+                    id={`userPersona${i + 1}`}
+                    value={userPersonas[i]}
+                    onChange={(e) => handleUserPersonaChange(i, e.target.value)}
                     className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                    placeholder={`Enter user persona ${i}`}
+                    placeholder={`Enter user persona ${i + 1}`}
                   />
                 </div>
               ))}

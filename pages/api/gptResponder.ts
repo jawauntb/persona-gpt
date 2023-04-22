@@ -1,24 +1,17 @@
-export async function getResponsesFromPersonas(endpoint:string, apiKey:string, inputText:string, productIdea:string, personas:string[]) {
-  const payload = {
-    productIdea,
-    personas,
-    inputText,
-  };
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import { HumanChatMessage, SystemChatMessage } from "langchain/schema";
 
-  const requestOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-  };
+export async function getResponsesFromPersonas(inputText: string, productIdea: string, personas: string[]) {
+  const key = "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"
+  const chat = new ChatOpenAI({ openAIApiKey: key, temperature: 0.8 });
 
   const responses = await Promise.all(
-    personas.map(async () => {
-      const response = await fetch(endpoint, requestOptions);
-      const data = await response.json();
-      return data.response;
+    personas.map(async (persona) => {
+      const response = await chat.call([
+        new SystemChatMessage(`Persona: ${persona}\nProduct Idea: ${productIdea}`),
+        new HumanChatMessage(inputText),
+      ]);
+      return response.text.trim();
     })
   );
 
